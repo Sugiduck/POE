@@ -148,7 +148,10 @@ class var ():
             if not options["holdon"]:
                 plt.show()
 
-    def redefine(self, f):
+    def redefine(self, f, new_units = ""):
+        if new_units != "":
+            self.units = new_units
+
         self.f = f([self.sym])
         self.err_f = gauss(self.f, [self])
 

@@ -1,4 +1,3 @@
-
 def text2mat (M:str):
     M = M.replace("\t", " ")
     M = M.replace("−", "-")

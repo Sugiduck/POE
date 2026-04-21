@@ -1,0 +1,19 @@
+Añadir / Borrar / Restaurar ficheros:
+git add / rm / restore "fichero.txt"
+
+
+Ver lo que se va a hacer:
+git status
+
+
+Ejecutar cambios:
+git commit -m "second commit" 
+
+
+Comunicar cambios a la versión web?:
+git push -u origin main
+
+
+Esto no termino de entenderlo:
+git Branch -M main
+git remote add origin https://github.com/Sugiduck/POE

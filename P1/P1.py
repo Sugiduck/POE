@@ -51,7 +51,7 @@ f.redefine(lambda x: x[0]*(10**6)) # Hz
 f.show()
 dt.redefine(lambda x: x[0]*1e-9) # s
 
-w = f_var(lambda x: 2*np.pi*x[0], [f], r"$\omega$", "rad/s")
+w = f_var(lambda x: 2*np.pi*x[0], [f], r"$\omega$") # rad/s
 
 # Procesado del intervalo en angulo:
 dphi = f_var(lambda x: 2*np.pi*x[0]*x[1], [dt, f], r"$\Delta \phi$")
@@ -67,6 +67,6 @@ for i in range(len(dphi_value) - 1):
 dphi = var(dphi_value, dphi_err)
 
 beta = f_var(lambda x: x[0]/100, [dphi], r"$\beta$", "rad/m")
-
+w.redefine(lambda x: x[0]/1e6, r" $\cdot 10^6$ rad/s")
 
 w.vs(beta)
