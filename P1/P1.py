@@ -42,10 +42,13 @@ M = """0.5	5.6	4.64	528	1	1.658760921	1.658760921
 M = text2dataframe(M)
 M = M.to_numpy()
 
-f = var(M[:,0], 0.01) # MHz
+f = var(M[:,0], 0.01, "f") # MHz
 dt = var(M[:,3], M[:,4]) # ns
 
+f.show()
+
 f.redefine(lambda x: x[0]*(10**6)) # Hz
+f.show()
 dt.redefine(lambda x: x[0]*1e-9) # s
 
 w = f_var(lambda x: 2*np.pi*x[0], [f], r"$\omega$", "rad/s")
@@ -64,5 +67,6 @@ for i in range(len(dphi_value) - 1):
 dphi = var(dphi_value, dphi_err)
 
 beta = f_var(lambda x: x[0]/100, [dphi], r"$\beta$", "rad/m")
+
 
 w.vs(beta)

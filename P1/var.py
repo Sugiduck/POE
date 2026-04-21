@@ -82,6 +82,7 @@ class var ():
             
         import matplotlib.ticker as mticker
         ax = plt.gca()
+        """
         ax.yaxis.set_major_formatter(mticker.EngFormatter(
             useOffset=True,
             #unit= self.units
@@ -90,6 +91,7 @@ class var ():
             useOffset=True,
             #unit= v.units
             ))
+        """
         ax.set_box_aspect(1.0)
         
         # Todas estas funciones no son más que wrappers de funciones de la clase axes.
@@ -103,7 +105,7 @@ class var ():
             import numpy as np
 
             # Asegurar que los datos tengan el mismo tamaño.
-            data = np.broadcast_arrays(self.value, v.value, self.err, v.err)
+            data = np.broadcast_arrays(v.value, self.value, v.err, self.err)
 
             # Calcular parámetros del ajuste lineal.
             result = stats.linregress(data[0], data[1], nan_policy = "omit")
@@ -132,7 +134,7 @@ class var ():
             f = lambda t: m.value*t + n.value
                 
             plt.plot([a-e,b+e], [f(a-e),f(b+e)])
-            plt.errorbar(data[0], data[1], data[2], data[3], **plot_args)
+            plt.errorbar(data[0], data[1], data[3], data[2], **plot_args)
 
             if not options["holdon"]:
                 plt.show()
@@ -149,6 +151,10 @@ class var ():
     def redefine(self, f):
         self.f = f([self.sym])
         self.err_f = gauss(self.f, [self])
+
+        # Esto no es muy elegante porque borra la dependencia anterior
+        # Que en verdad no deberia de necesitarla más, pero no es bonito.
+        self.variables = [self]
         self.calculate()
 
     def split(self):
