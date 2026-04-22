@@ -76,15 +76,12 @@ class var ():
         options = {
             "columns": [],
             "holdon": False,
-            "new_axis": False,
             "fitlm": True,
             "axes": []
             } | options
             
         import matplotlib.ticker as mticker
         ax = plt.gca()
-        if options["new_axis"]:
-            plt.cla()
 
         """
         ax.yaxis.set_major_formatter(mticker.EngFormatter(
@@ -99,6 +96,7 @@ class var ():
         ax.set_box_aspect(1.0)
         
         # Todas estas funciones no son más que wrappers de funciones de la clase axes.
+        
         plt.xlabel(rf"{v.name} ({v.units})")
         plt.ylabel(rf"{self.name} ({self.units})")
         plt.grid(visible = True)
@@ -141,7 +139,7 @@ class var ():
             plt.errorbar(data[0], data[1], data[3], data[2], color = ax.lines[-1].get_color(), **plot_args)
 
             if not options["holdon"]:
-                plt.show()
+                pass
             return m,n
 
         else:
@@ -150,7 +148,7 @@ class var ():
             plt.plot(v.value, self.value, **plot_args)
 
             if not options["holdon"]:
-                plt.show()
+                pass
 
     def redefine(self, f, new_units = ""):
         if new_units != "":

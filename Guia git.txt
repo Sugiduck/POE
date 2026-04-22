@@ -16,4 +16,11 @@ git push -u origin main
 
 Esto no termino de entenderlo:
 git Branch -M main
-git remote add origin https://github.com/Sugiduck/POE
+git remote add origin https://github.com/Sugiduck/
+
+
+![Cargas 1 y 2](images/foto_cargas.jpeg)
+![Divisor de tension](images/fot_divisor_tension.jpeg)
+
+![Image](images/Carga_1_S11.jpeg)
+![Image](images/Carga_2_S11.png)

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from data_management import *
 from var import *
 
@@ -17,6 +18,8 @@ C = var(M[:,1], M[:,2], "C", "F") # nF
 C.redefine(lambda x: x[0]*1e-9) # F
 
 [C, C_0] = C.vs(l) # C -> F/m
+plt.savefig("./P1/images/C_vs_z")
+plt.close()
 
 # Z_G > 2 G\Omega para l = 300 m
 
@@ -50,8 +53,8 @@ M = M.to_numpy()
 
 f = var(M[:,0], 0.01, "f") # MHz
 dt = var(M[:,3], M[:,4]) # ns
-Ve = var(M[:,1], 0.8) # V
-Vs = var(M[:,2], 0.8) # V
+Ve = var(M[:,1], 0.1) # V
+Vs = var(M[:,2], 0.1) # V
 
 f.redefine(lambda x: x[0]*(10**6)) # Hz
 dt.redefine(lambda x: x[0]*1e-9) # s
@@ -75,8 +78,12 @@ beta = f_var(lambda x: x[0]/100, [dphi], r"$\beta$", "rad/m")
 w.redefine(lambda x: x[0]/1e6, r" $\cdot 10^6$ rad/s")
 
 w.vs(beta)
+plt.savefig("./P1/images/w_vs_beta")
+plt.close()
 
 # Cálculo de alpha:
 import sympy as sp
 alpha = f_var(lambda x: (-sp.ln(x[1] / x[0])/100), [Ve, Vs], r"$\alpha$", r"$m^{-1}$")
 w.vs(alpha)
+plt.savefig("./P1/images/w_vs_alpha")
+plt.close()
