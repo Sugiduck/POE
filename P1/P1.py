@@ -12,15 +12,13 @@ M = """100	9.88	0.01
 M = text2dataframe(M)
 M = M.to_numpy()
 
-l = var(M[:,0], 0.01) # m
-C = var(M[:,1], M[:,2]) # nF
+l = var(M[:,0], 0.01, "z", "m") # m
+C = var(M[:,1], M[:,2], "C", "F") # nF
 C.redefine(lambda x: x[0]*1e-9) # F
 
-options = {"holdon": True, "new_axis": True}
-[C, C_0] = C.vs(l, options) # C -> F/m
+[C, C_0] = C.vs(l) # C -> F/m
 
 # Z_G > 2 G\Omega para l = 300 m
-# Z_G * l > 
 
 L = f_var(lambda x: 1/(x[0]*x[1]**2), [C, v_phi], "L", "") # H/m
 
@@ -76,9 +74,9 @@ dphi = var(dphi_value, dphi_err)
 beta = f_var(lambda x: x[0]/100, [dphi], r"$\beta$", "rad/m")
 w.redefine(lambda x: x[0]/1e6, r" $\cdot 10^6$ rad/s")
 
-w.vs(beta, options = {"new_axis": True})
+w.vs(beta)
 
 # Cálculo de alpha:
 import sympy as sp
 alpha = f_var(lambda x: (-sp.ln(x[1] / x[0])/100), [Ve, Vs], r"$\alpha$", r"$m^{-1}$")
-w.vs(alpha, options)
+w.vs(alpha)
