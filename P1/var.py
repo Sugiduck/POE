@@ -5,7 +5,7 @@
 
 class var ():
     # Para variables independientes, ya sean medidas de laboratorio, parámetros o constantes.
-    def __init__ (self, value, err, name = "", axes = (), units = "", str_format = "{:.2f}", *args):
+    def __init__ (self, value, err, name = "", units = "", axes = (), str_format = "{:.2f}", *args):
         import numpy as np
         import sympy as sp
         import random
@@ -149,6 +149,20 @@ class var ():
 
             if not options["holdon"]:
                 pass
+
+    def media_ponderada(self):
+        import numpy as np
+        [values, error] = np.broadcast_arrays(self.value, self.err)
+
+        w = error**(-2)
+
+        mean = sum([values[i]*w[i] for i in range(len(values))])
+        mean = mean/sum(w)
+
+        mean_error = (sum(w))**(-1/2)
+
+        return mean, mean_error
+
 
     def redefine(self, f, new_units = ""):
         if new_units != "":

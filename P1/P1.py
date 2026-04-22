@@ -6,24 +6,30 @@ from var import *
 R0 = var(50, 2.5)
 v_phi = var(2e8, 1e7)
 
-M = """100	9.88	0.01
-200	19.76	0.01
-300	29.9	0.1"""
+M = """100	9.88	0.01	5.5
+200	19.76	0.01	10.5
+300	29.9	0.1	16.9"""
 
 M = text2dataframe(M)
 M = M.to_numpy()
 
-l = var(M[:,0], 0.01, "z", "m") # m
-C = var(M[:,1], M[:,2], "C", "F") # nF
-C.redefine(lambda x: x[0]*1e-9) # F
+z = var(M[:,0], 0.02, "z", "m") # m
+C = var(M[:,1], M[:,2], "C", "nF") # nF
+R = var(M[:,3], 0.1, "R") # \Omega
 
-[C, C_0] = C.vs(l) # C -> F/m
-plt.savefig("./P1/images/C_vs_z")
-plt.close()
+# C.redefine(lambda x: x[0]*1e-9) # F
+
+# [C, C_0] = C.vs(l) # C -> F/m
+# plt.savefig("./P1/images/C_vs_z")
+# plt.close()
+
+C_esp = f_var(lambda x: x[0]/x[1], [C, z])
+C_esp = var(*C_esp.media_ponderada(), r"C_{Característica}", "nF/m")
+C_esp.show()
 
 # Z_G > 2 G\Omega para l = 300 m
 
-L = f_var(lambda x: 1/(x[0]*x[1]**2), [C, v_phi], "L", "") # H/m
+L = f_var(lambda x: 1/(x[0]*x[1]**2), [C_esp, v_phi], "L", "") # H/m
 
 L.show()
 
