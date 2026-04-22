@@ -21,6 +21,10 @@ def text2dataframe (M:str):
     import pandas as pd
     return pd.DataFrame(text2mat(M))
 
+def text2numpy (M: str):
+    M = text2dataframe(M)
+    return M.to_numpy()
+
 # Otras maneras que probablemente sean mejores son:
 # data = pd.read_csv(filepath, delimiter = r"\s+")
 # data = np.loadtxt("data/massnubasestbldata.dat")

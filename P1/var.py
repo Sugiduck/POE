@@ -76,12 +76,16 @@ class var ():
         options = {
             "columns": [],
             "holdon": False,
+            "new_axis": False,
             "fitlm": True,
             "axes": []
             } | options
             
         import matplotlib.ticker as mticker
         ax = plt.gca()
+        if options["new_axis"]:
+            plt.cla()
+
         """
         ax.yaxis.set_major_formatter(mticker.EngFormatter(
             useOffset=True,
@@ -112,7 +116,7 @@ class var ():
             m = var(result.slope, result.stderr)
             n = var(result.intercept, result.intercept_stderr)
 
-            plot_args = {"marker": "",
+            plot_args = {"marker": "o",
                 "capsize": 4,
                 "markerfacecolor": "None",
                 "linestyle": "",
@@ -134,7 +138,7 @@ class var ():
             f = lambda t: m.value*t + n.value
                 
             plt.plot([a-e,b+e], [f(a-e),f(b+e)])
-            plt.errorbar(data[0], data[1], data[3], data[2], **plot_args)
+            plt.errorbar(data[0], data[1], data[3], data[2], color = ax.lines[-1].get_color(), **plot_args)
 
             if not options["holdon"]:
                 plt.show()
