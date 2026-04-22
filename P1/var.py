@@ -60,10 +60,13 @@ class var ():
         import numpy as np
 
         print("==========")
-        print(f"Name: {self.name} \nValues:")
+        print(f"Name: {self.name}")
+        if self.units != "":
+            print(f"Units: {self.units}")
+        print("Values: ")
         b = np.broadcast(self.value, self.err)
         for x,e in b:
-            #print(rf"{self.value[i]}\t$\pm$\t{self.err[i]}")
+
             print(f"{x} \t\t {e}")
         print("==========")
 
@@ -147,8 +150,6 @@ class var ():
                         "linestyle": "-"} | plot_args
             plt.plot(v.value, self.value, **plot_args)
 
-            if not options["holdon"]:
-                pass
 
     def media_ponderada(self):
         import numpy as np

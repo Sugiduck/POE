@@ -15,13 +15,7 @@ M = M.to_numpy()
 
 z = var(M[:,0], 0.02, "z", "m") # m
 C = var(M[:,1], M[:,2], "C", "nF") # nF
-R = var(M[:,3], 0.1, "R") # \Omega
-
-# C.redefine(lambda x: x[0]*1e-9) # F
-
-# [C, C_0] = C.vs(l) # C -> F/m
-# plt.savefig("./P1/images/C_vs_z")
-# plt.close()
+R = var(M[:,3], 0.1, "R") # \Ohmios
 
 C_esp = f_var(lambda x: x[0]/x[1], [C, z])
 C_esp = var(*C_esp.media_ponderada(), r"$C_{Característica}$", "nF/m")
