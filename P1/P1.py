@@ -24,14 +24,19 @@ R = var(M[:,3], 0.1, "R") # \Omega
 # plt.close()
 
 C_esp = f_var(lambda x: x[0]/x[1], [C, z])
-C_esp = var(*C_esp.media_ponderada(), r"C_{Característica}", "nF/m")
+C_esp = var(*C_esp.media_ponderada(), r"$C_{Característica}$", "nF/m")
 C_esp.show()
 
+R_esp = f_var(lambda x: x[0]/x[1], [R, z])
+R_esp = var(*R_esp.media_ponderada(), r"$R_{Característica}$", r"\Omega/m")
+R_esp.show()
+
 # Z_G > 2 G\Omega para l = 300 m
+# G < 0.5 nano Siemen para l = 300 m
+# G < 0.5 / 300    nano Siemen / m
 
-L = f_var(lambda x: 1/(x[0]*x[1]**2), [C_esp, v_phi], "L", "") # H/m
-
-L.show()
+L_esp = f_var(lambda x: 1e15/(x[0]*x[1]**2), [C_esp, v_phi], r"$L_{Caracteristica}$", r"$\mu$H/m") # uH/m
+L_esp.show()
 
 M = """0.5	5.6	4.64	528	1
 1	5.28	4.48	528	1
