@@ -82,7 +82,7 @@ dphi = var(dphi_value, dphi_err, "phi")
 beta = f_var(lambda x: x[0]/100, [dphi], r"$\beta$", "rad/m")
 w.redefine(lambda x: x[0]/1e6, r" $\cdot 10^6$ rad/s")
 
-[vf, w0] = w.vs(beta)
+[vf, w0] = beta.vs(w)
 plt.savefig("./P1/images/w_vs_beta")
 plt.close()
 
