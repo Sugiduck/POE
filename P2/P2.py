@@ -18,12 +18,11 @@ M = M.to_numpy()
 
 w = var(M[:,0], 1) # MHz
 z_max = var(M[:,1], 0.2) # mm
-z_min = var(M[:,2], 0.2)
+z_min = var(M[:,2], 0.2) # mm
 
 N = var(M[:,3], 0)
 
 lambda_2 = f_var(lambda x: (x[1] - x[0])/x[2], [z_max, z_min, N], r"\lambda/2")
-
 k = f_var(lambda x: 2*np.pi/x[0], [lambda_2])
 
 # k.vs(w)
@@ -45,17 +44,45 @@ plt.ylabel(r"$\omega$ (rad/s)")
 plt.grid(visible = True)
 plt.minorticks_on()
 
-# plt.close()
-
 plt.show()
+
+# Cálculo frecuencia de corte teórica
 
 a = var(2.25, 0.05) # cm
 a.redefine(lambda x: x[0]/100) # m
-k_c = f_var(lambda x: np.pi/x[0], [a], r"$k_c$")
+k_c = f_var(lambda x: np.pi/x[0], [a], r"$k_c$") # rad/m
 
 c = var(299792456, 1) # m/s
 
 w_c = f_var(lambda x: x[0]*x[1], [k_c, c])
-f_c = f_var(lambda x: x[0]/2*np.pi, [w_c], r"f_c", "Hz")
+f_c = f_var(lambda x: x[0]/2/np.pi, [w_c], "Frecuencia de corte teorica", "Hz")
+f_c.redefine(lambda x: x[0]/1e6, "MHz")
 
 f_c.show()
+
+# Frecuencia de corte experimental:
+
+beta2 = f_var(lambda x: x[0]**2, [k], r"$\beta^2$", r"mm$^{-2}$")
+w2 = f_var(lambda x: x[0]**2, [w], r"$\omega^2$", r"rad$^2$/s$^2$")
+
+plt.close()
+[m, n] = beta2.vs(w2)
+
+f = lambda t: m.value*t + n.value
+t = np.linspace(-0.05*1e8, 1*1e8, 20)
+
+ax = plt.gca()
+ax.plot(t, f(t), color = "C0")
+
+plt.show()
+
+import sympy as sp
+wc_exp = f_var(lambda x: sp.sqrt(-x[1]/x[0]), [m,n])
+fc_exp = f_var(lambda x: x[0]/2/np.pi, [wc_exp], "Frecuencia de corte experimental", "MHz")
+fc_exp.show()
+
+
+# Cálculo de las impedancias
+
+SWR = var([20, 20, 1.45], [2, 1, 0.05])
+Gamma = f_var(lambda x: (1+x[0])/(1-x[0]), [SWR])
