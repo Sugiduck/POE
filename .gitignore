@@ -1,5 +1,2 @@
 # Ignore python temporary files
-__pycache__
-
-# Ignore python files
-*.py
+*__pycache__

@@ -92,6 +92,8 @@ w0.name = "Corte con la ordenada w vs beta"
 vf.show()
 w0.show()
 
+print(var2ipython_latex([vf, w0]))
+
 # Cálculo de alpha:
 import sympy as sp
 alpha = f_var(lambda x: (-sp.ln(x[1] / x[0])/100), [Ve, Vs], r"$\alpha$", r"$m^{-1}$")
