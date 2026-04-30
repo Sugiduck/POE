@@ -22,8 +22,8 @@ z_min = var(M[:,2], 0.2) # mm
 
 N = var(M[:,3], 0)
 
-lambda_2 = f_var(lambda x: (x[1] - x[0])/x[2], [z_max, z_min, N], r"\lambda/2")
-k = f_var(lambda x: 2*np.pi/x[0], [lambda_2])
+lambda_2 = f_var(lambda x: (x[1] - x[0])/x[2], [z_max, z_min, N], r"\lambda/2") # mm
+k = f_var(lambda x: 2*np.pi/x[0], [lambda_2]) # rad/mm
 
 # k.vs(w)
 
@@ -44,7 +44,7 @@ plt.ylabel(r"$\omega$ (rad/s)")
 plt.grid(visible = True)
 plt.minorticks_on()
 
-plt.show()
+# plt.show()
 
 # Cálculo frecuencia de corte teórica
 
@@ -54,7 +54,7 @@ k_c = f_var(lambda x: np.pi/x[0], [a], r"$k_c$") # rad/m
 
 c = var(299792456, 1) # m/s
 
-w_c = f_var(lambda x: x[0]*x[1], [k_c, c])
+w_c = f_var(lambda x: x[0]*x[1], [k_c, c]) # rad/s
 f_c = f_var(lambda x: x[0]/2/np.pi, [w_c], "Frecuencia de corte teorica", "Hz")
 f_c.redefine(lambda x: x[0]/1e6, "MHz")
 
@@ -62,11 +62,14 @@ f_c.show()
 
 # Frecuencia de corte experimental:
 
-beta2 = f_var(lambda x: x[0]**2, [k], r"$\beta^2$", r"mm$^{-2}$")
-w2 = f_var(lambda x: x[0]**2, [w], r"$\omega^2$", r"rad$^2$/s$^2$")
+beta2 = f_var(lambda x: x[0]**2, [k], r"$\beta^2$", r"rad$^2$/mm$^2$")
+w2 = f_var(lambda x: x[0]**2, [w], r"$\omega^2$", r"$\cdot 10^{12}$ rad$^2$/s$^2$")
 
 plt.close()
-[m, n] = beta2.vs(w2)
+[m, n] = beta2.vs(w2) # (1/mm/MHz)^2; (rad/mm)^2
+
+m.show()
+n.show()
 
 f = lambda t: m.value*t + n.value
 t = np.linspace(-0.05*1e8, 1*1e8, 20)
@@ -77,7 +80,7 @@ ax.plot(t, f(t), color = "C0")
 plt.show()
 
 import sympy as sp
-wc_exp = f_var(lambda x: sp.sqrt(-x[1]/x[0]), [m,n])
+wc_exp = f_var(lambda x: sp.sqrt(-x[1]/x[0]), [m,n]) # rad/s
 fc_exp = f_var(lambda x: x[0]/2/np.pi, [wc_exp], "Frecuencia de corte experimental", "MHz")
 fc_exp.show()
 
@@ -85,4 +88,24 @@ fc_exp.show()
 # Cálculo de las impedancias
 
 SWR = var([20, 20, 1.45], [2, 1, 0.05])
-Gamma = f_var(lambda x: (1+x[0])/(1-x[0]), [SWR])
+Gamma = f_var(lambda x: (x[0]-1)/(x[0]+1), [SWR])
+
+# Calculo la beta asociada a nuestro w
+w_current = var(8861, 1) # MHz
+beta_current = f_var(lambda x: sp.sqrt(x[0]*x[1]**2 + x[2]), [m, w_current, n], r"$\beta$")
+beta_current.show()
+
+z_max = var([49.7, 49.7, 63.2], 0.1) # mm
+z_min = var([63.2, 63.2, 72], 0.1) # mm
+
+theta_Gamma = f_var(lambda x: 2*x[0]*x[1] - 6*np.pi, [beta_current, z_max], r"$\theta_{\Gamma}$") # rad
+theta_Gamma.show()
+
+from sympy import I # sUnidad imaginaria
+Gamma_complex = f_var(lambda x: x[0]*sp.exp(I*x[1]), [Gamma, theta_Gamma])
+
+Z_0 = var(50, 0.1) # Ohm
+Z_carga = f_var(lambda x: x[0]*(1-x[1])/(1+x[1]), [Z_0, Gamma_complex], r"$Z_{carga}$")
+Z_carga.show()
+
+# Re_Gamma_carga = f_var(lambda x: x[0]*sp.cos(x[1]*x[2], [Gamma, beta_current, ]))
