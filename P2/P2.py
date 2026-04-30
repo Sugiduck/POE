@@ -17,6 +17,8 @@ M = text2dataframe(M)
 M = M.to_numpy()
 
 w = var(M[:,0], 1) # MHz
+w.redefine(lambda x: 2*np.pi*x[0])
+# w = f_var(lambda x: 2*np.pi*x[0], [f]) # 1e6 rad/s
 z_max = var(M[:,1], 0.2) # mm
 z_min = var(M[:,2], 0.2) # mm
 
@@ -40,9 +42,11 @@ plt.errorbar(k.value, w.value, w.err, k.err, **plot_args) # x, y, \Delta y, \Del
 ax = plt.gca()
 ax.set_box_aspect(1.0)
 plt.xlabel(r"$\beta$ (rad/mm)")
-plt.ylabel(r"$\omega$ (rad/s)")
+plt.ylabel(r"$\omega$ ($\cdot 10^6$ rad/s)")
 plt.grid(visible = True)
 plt.minorticks_on()
+
+c = var(299792456, 1) # m/s
 
 plt.savefig("./P2/images/w_vs_beta")
 # plt.show()
@@ -52,8 +56,6 @@ plt.savefig("./P2/images/w_vs_beta")
 a = var(2.25, 0.05) # cm
 a.redefine(lambda x: x[0]/100) # m
 k_c = f_var(lambda x: np.pi/x[0], [a], r"$k_c$") # rad/m
-
-c = var(299792456, 1) # m/s
 
 w_c = f_var(lambda x: x[0]*x[1], [k_c, c]) # rad/s
 f_c = f_var(lambda x: x[0]/2/np.pi, [w_c], "Frecuencia de corte teorica", "Hz")
@@ -79,11 +81,11 @@ n.show()
 
 
 # Esto al final creo que no es buena idea (alargar la linea del ajuste hasta que corte con el eje de abscisas):
-# f = lambda t: m.value*t + n.value
+# f = lambda t: c.value*t
 # t = np.linspace(-0.05*1e8, 1*1e8, 20)
 
 # ax = plt.gca()
-# ax.plot(t, f(t), color = "C0")
+#ax.plot(t, f(t), color = "C0")
 
 plt.savefig("./P2/images/beta2_vs_w2")
 # plt.show()
@@ -93,14 +95,14 @@ wc_exp = f_var(lambda x: sp.sqrt(-x[1]/x[0]), [m,n]) # rad/s
 fc_exp = f_var(lambda x: x[0]/2/np.pi, [wc_exp], "Frecuencia de corte experimental", "MHz")
 fc_exp.show()
 
-
 # Cálculo de las impedancias
 
 SWR = var([20, 1.45], [2, 0.05])
-Gamma = f_var(lambda x: (x[0]-1)/(x[0]+1), [SWR])
+Gamma = f_var(lambda x: (x[0]-1)/(x[0]+1), [SWR], "Modulo de gamma")
+Gamma.show()
 
 # Calculo la beta asociada a nuestro w
-w_current = var(8861, 1) # MHz
+w_current = var(2*np.pi*8861, 1) # MHz
 beta_current = f_var(lambda x: sp.sqrt(x[0]*x[1]**2 + x[2]), [m, w_current, n], r"$\beta$")
 beta_current.show()
 
@@ -118,3 +120,6 @@ Gamma_complex = f_var(lambda x: x[0]*sp.exp(I*x[1]), [Gamma, theta_Gamma])
 Z_0 = var(50, 0.1) # Ohm
 Z_carga = f_var(lambda x: x[0]*(1+x[1])/(1-x[1]), [Z_0, Gamma_complex], r"$Z_{carga}$", r"$\Omega$")
 Z_carga.show()
+
+# Z_carga_ideal = f_var(lambda x: x[0]*(1+x[1])/(1-x[1]), [Z_0, Gamma])
+# Z_carga_ideal.show()
