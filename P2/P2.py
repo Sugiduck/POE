@@ -96,7 +96,7 @@ fc_exp.show()
 
 # Cálculo de las impedancias
 
-SWR = var([20, 20, 1.45], [2, 1, 0.05])
+SWR = var([20, 1.45], [2, 0.05])
 Gamma = f_var(lambda x: (x[0]-1)/(x[0]+1), [SWR])
 
 # Calculo la beta asociada a nuestro w
@@ -104,8 +104,8 @@ w_current = var(8861, 1) # MHz
 beta_current = f_var(lambda x: sp.sqrt(x[0]*x[1]**2 + x[2]), [m, w_current, n], r"$\beta$")
 beta_current.show()
 
-z_max = var([49.7, 49.7, 63.2], 0.1) # mm
-z_min = var([63.2, 63.2, 72], 0.1) # mm
+z_max = var([49.7, 63.2], 0.1) # mm
+z_min = var([63.2, 72], 0.1) # mm
 
 theta_Gamma = f_var(lambda x: 2*x[0]*x[1] - np.pi, [beta_current, z_min], r"$\theta_{\Gamma}$", "rad") # rad
 theta_Gamma.show()
