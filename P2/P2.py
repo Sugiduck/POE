@@ -44,6 +44,7 @@ plt.ylabel(r"$\omega$ (rad/s)")
 plt.grid(visible = True)
 plt.minorticks_on()
 
+plt.savefig("./P2/images/w_vs_beta")
 # plt.show()
 
 # Cálculo frecuencia de corte teórica
@@ -68,16 +69,24 @@ w2 = f_var(lambda x: x[0]**2, [w], r"$\omega^2$", r"$\cdot 10^{12}$ rad$^2$/s$^2
 plt.close()
 [m, n] = beta2.vs(w2) # (1/mm/MHz)^2; (rad/mm)^2
 
+m.name = "Pendiente"
+m.units = "(1/mm/MHz)^2"
+n.name = "Corte con la ordenada"
+n.units = "(rad/mm)^2"
+
 m.show()
 n.show()
 
-f = lambda t: m.value*t + n.value
-t = np.linspace(-0.05*1e8, 1*1e8, 20)
 
-ax = plt.gca()
-ax.plot(t, f(t), color = "C0")
+# Esto al final creo que no es buena idea (alargar la linea del ajuste hasta que corte con el eje de abscisas):
+# f = lambda t: m.value*t + n.value
+# t = np.linspace(-0.05*1e8, 1*1e8, 20)
 
-plt.show()
+# ax = plt.gca()
+# ax.plot(t, f(t), color = "C0")
+
+plt.savefig("./P2/images/beta2_vs_w2")
+# plt.show()
 
 import sympy as sp
 wc_exp = f_var(lambda x: sp.sqrt(-x[1]/x[0]), [m,n]) # rad/s
@@ -98,14 +107,16 @@ beta_current.show()
 z_max = var([49.7, 49.7, 63.2], 0.1) # mm
 z_min = var([63.2, 63.2, 72], 0.1) # mm
 
-theta_Gamma = f_var(lambda x: 2*x[0]*x[1] - 6*np.pi, [beta_current, z_max], r"$\theta_{\Gamma}$") # rad
+theta_Gamma = f_var(lambda x: 2*x[0]*x[1] - np.pi, [beta_current, z_min], r"$\theta_{\Gamma}$", "rad") # rad
 theta_Gamma.show()
 
-from sympy import I # sUnidad imaginaria
+from sympy import I # Unidad imaginaria
 Gamma_complex = f_var(lambda x: x[0]*sp.exp(I*x[1]), [Gamma, theta_Gamma])
 
+# Gamma_complex.show()
+
 Z_0 = var(50, 0.1) # Ohm
-Z_carga = f_var(lambda x: x[0]*(1-x[1])/(1+x[1]), [Z_0, Gamma_complex], r"$Z_{carga}$")
+Z_carga = f_var(lambda x: x[0]*(1+x[1])/(1-x[1]), [Z_0, Gamma_complex], r"$Z_{carga}$", r"$\Omega$")
 Z_carga.show()
 
 # Re_Gamma_carga = f_var(lambda x: x[0]*sp.cos(x[1]*x[2], [Gamma, beta_current, ]))
