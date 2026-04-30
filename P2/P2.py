@@ -118,5 +118,3 @@ Gamma_complex = f_var(lambda x: x[0]*sp.exp(I*x[1]), [Gamma, theta_Gamma])
 Z_0 = var(50, 0.1) # Ohm
 Z_carga = f_var(lambda x: x[0]*(1+x[1])/(1-x[1]), [Z_0, Gamma_complex], r"$Z_{carga}$", r"$\Omega$")
 Z_carga.show()
-
-# Re_Gamma_carga = f_var(lambda x: x[0]*sp.cos(x[1]*x[2], [Gamma, beta_current, ]))
