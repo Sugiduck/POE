@@ -274,7 +274,7 @@ def var2ipython_latex(variables):
     template += "\t" + " & ".join(["\\textbf{" + v.name + "} (" + v.units + ")" for v in variables]) + " \\\\ \n"
 
     # template += "\t\\bottomrule \\toprule \n"
-    print(variables[-1].value)
+    # print(variables[-1].value)
     for i in range(variables[-1].value.size):
         template += "\t" + " & ".join([v.str_format.format(v.value[i]) for v in variables]) + " \\\\ \n"
 

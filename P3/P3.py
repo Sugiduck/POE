@@ -3,45 +3,20 @@ import matplotlib.pyplot as plt
 from var import *
 from data_management import *
 
-M = """9829	38	120.5	4
-9664	44.9	108.2	3
-9308	39.1	107.6	3
-9004	54.3	127	3
-8731	44	123	3
-8425	65	121.7	2
-8202	52.5	112.7	2
-7984	70.8	105.2	1
-7763	59.2	96	1
-7586	42.1	123.6	2"""
+path = "P3/"
 
-"""
-M = text2dataframe(M)
-M = M.to_numpy()
-
-w = var(M[:,0], 1, "$\omega$", "MHz", str_format = "{:.1f}") # MHz
-w.redefine(lambda x: 2*np.pi*x[0])
-# w = f_var(lambda x: 2*np.pi*x[0], [f]) # 1e6 rad/s
-z_max = var(M[:,1], 0.2) # mm
-z_min = var(M[:,2], 0.2) # mm
-
-N = var(M[:,3], 0, str_format = "{:.0f}")
-
-# print(var2ipython_latex([w, z_min, z_max, N]).replace("\\", "\\\\"))
-print(var2ipython_latex([w, z_min, z_max, N]))
-"""
-
-M = """9	16.1	-19.09	0.01
-8.75	15.8	-19.03	0.01
-8.5	15.5	-19.01	0.01
-8.25	15.1	-18.99	0.01
-8	14.5	-18.95	0.01
-7.75	13.8	-18.94	0.01
-7.5	12.9	-18.98	0.01
-7.25	11.6	-19.33	0.01
-7	10.1	-20.03	0.01
-6.75	8.2	-21.45	0.03
-6.5	6.1	-23.52	0.03
-6.25	4	-26.06	0.03
+M = """9	18.7	-19.09	0.01
+8.75	18.6	-19.03	0.01
+8.5	18.5	-19.01	0.01
+8.25	18.3	-18.99	0.01
+8	15.7	-18.95	0.01
+7.75	14.8	-18.94	0.01
+7.5	13.9	-18.98	0.01
+7.25	12.5	-19.33	0.01
+7	10.8	-20.03	0.01
+6.75	8.7	-21.45	0.03
+6.5	6.4	-23.52	0.03
+6.25	4.2	-26.06	0.03
 6	2.4	-29.23	0.03
 5.75	1.2	-32.63	0.03
 5.5	0.6	-37	1
@@ -55,21 +30,23 @@ M = M.to_numpy()
 x = var(M[:,0], 0.01, "Posición atenuador", "u.a.")
 V = var(M[:,1], 0.1, "Voltaje", "mV")
 V.redefine(lambda x: -x[0])
-P_dB = var(M[:,2], M[:,3], "Potencia", "dbm")
-P = f_var(lambda x: 10**((x[0]/10)-3), [P_dB], "Potencia", "W")
+V.show()
+P_dB = var(M[:,2], M[:,3], "Potencia", "dBm")
+# P = f_var(lambda x: 10**((x[0]/10)-3), [P_dB], "Potencia", "W")
 
+delta_P = var(P_dB.err, 0, r"\Delta P", "dBm")
 print(var2ipython_latex([x, V, P_dB]))
 
 options = {"fitlm": False, "errors": True}
-plot_args = {"markerfacecolor": None}
+plot_args = {"markerfacecolor": "None", "capsize": 4}
 
-P.vs(V, options = options, plot_args = plot_args)
-plt.savefig("~P3/images/P_vs_V")
+# P.vs(V, options = options, plot_args = plot_args)
+# plt.savefig(path + "images/P_vs_V")
 # plt.show()
 
 plt.close()
 P_dB.vs(V, options = options, plot_args = plot_args)
-plt.savefig("~P3/images/PdBm_vs_V")
+plt.savefig(path + "images/PdBm_vs_V")
 # plt.show()
 
 # Parte 2
@@ -93,5 +70,82 @@ M = """9	42	42.1	0	0	0.6	0.5
 5	0.1	0.2	0	0	0	0
 4.75	0	0.1	0	0	0	0"""
 
-D32 = var(M[:,1], 0.1)
-D23 = var(M[:,2], 0.1)
+M = text2dataframe(M)
+M = M.to_numpy()
+
+V_D32 = var(M[:,1], 0.1, "V", "mV")
+V_D23 = var(M[:,2], 0.1, "V", "mV")
+V_D31 = var(M[:,3], 0.1, "V", "mV")
+V_D13 = var(M[:,4], 0.1, "V", "mV")
+V_D21 = var(M[:,5], 0.1, "V", "mV")
+V_D12 = var(M[:,6], 0.1, "V", "mV")
+
+
+plt.close()
+V_D32.vs(x, options = options, plot_args = plot_args)
+V_D23.vs(x, options = options, plot_args = plot_args)
+plt.savefig(path + "images/V_vs_atenuador")
+# plt.show()
+
+
+def interpol (x):
+    x_cal = V.value
+    y_cal = P_dB.value
+
+    if x < min(x_cal) or x > max(x_cal):
+        return min(x_cal)
+
+    for i in range(len(x_cal)):
+        if x > x_cal[i]:
+            x0 = x_cal[i-1]
+            y0 = y_cal[i-1]
+            x1 = x_cal[i]
+            y1 = y_cal[i]
+            break
+
+    return y0 + ((y1 - y0)/(x1-x0))*x
+
+# P_D32 = var([interpol(-xi) for xi in M[:,1] if xi < -min], 0, "P", "W")
+# P_D23 = var([interpol(-xi) for xi in M[:,2] if xi < 16], 0, "P", "W")
+
+P_dB.name = "Potencia de entrada"
+P_D32 = var([interpol(-xi) for xi in M[:,1]], 0, "Potencia de salida", "dBm")
+P_D23 = var([interpol(-xi) for xi in M[:,2]], 0, "Potencia de salida", "dBm")
+P_D31 = var([interpol(-xi) for xi in M[:,3]], 0, "Potencia de salida", "dBm")
+P_D13 = var([interpol(-xi) for xi in M[:,4]], 0, "Potencia de salida", "dBm")
+P_D21 = var([interpol(-xi) for xi in M[:,5]], 0, "Potencia de salida", "dBm")
+P_D12 = var([interpol(-xi) for xi in M[:,6]], 0, "Potencia de salida", "dBm")
+
+plt.close()
+P_D32.vs(x, options = options, plot_args = plot_args)
+P_D23.vs(x, options = options, plot_args = plot_args)
+# P_D31.vs()
+plt.savefig(path + "images/P_vs_atenuador")
+# plt.show()
+
+plt.close()
+ax = plt.gca()
+ax.set_title("Entrada en puerta 2")
+P_D21.vs(P_dB, options = options, plot_args = plot_args)
+P_D23.vs(P_dB, options = options, plot_args = plot_args)
+plt.savefig(path + "images/P_salida_vs_entrada_2")
+# plt.show()
+
+plt.close()
+ax = plt.gca()
+ax.set_title("Entrada en puerta 1")
+P_D12.vs(P_dB, options = options, plot_args = plot_args)
+P_D13.vs(P_dB, options = options, plot_args = plot_args)
+plt.savefig(path + "images/P_salida_vs_entrada_1")
+
+plt.close()
+ax = plt.gca()
+ax.set_title("Entrada en puerta 3")
+P_D31.vs(P_dB, options = options, plot_args = plot_args)
+P_D32.vs(P_dB, options = options, plot_args = plot_args)
+plt.savefig(path + "images/P_salida_vs_entrada_3")
+
+
+# Segundo cacharro ("El cilindricp")
+
+
