@@ -80,11 +80,10 @@ V_D13 = var(M[:,4], 0.1, "V", "mV")
 V_D21 = var(M[:,5], 0.1, "V", "mV")
 V_D12 = var(M[:,6], 0.1, "V", "mV")
 
-
 plt.close()
 V_D32.vs(x, options = options, plot_args = plot_args)
 V_D23.vs(x, options = options, plot_args = plot_args)
-plt.savefig(path + "images/V_vs_atenuador")
+# plt.savefig(path + "images/V_vs_atenuador")
 # plt.show()
 
 
@@ -104,9 +103,6 @@ def interpol (x):
             break
 
     return y0 + ((y1 - y0)/(x1-x0))*x
-
-# P_D32 = var([interpol(-xi) for xi in M[:,1] if xi < -min], 0, "P", "W")
-# P_D23 = var([interpol(-xi) for xi in M[:,2] if xi < 16], 0, "P", "W")
 
 P_dB.name = "Potencia de entrada"
 P_D32 = var([interpol(-xi) for xi in M[:,1]], 0, "Potencia de salida", "dBm")
@@ -146,6 +142,41 @@ P_D32.vs(P_dB, options = options, plot_args = plot_args)
 plt.savefig(path + "images/P_salida_vs_entrada_3")
 
 
-# Segundo cacharro ("El cilindricp")
+# Segundo cacharro ("El cilindrico")
+
+M = """9.00	18.2	3.5
+8.75	17.6	3.3
+8.50	17.2	3.2
+8.25	16.8	3.0
+8.00	16.1	2.6
+7.75	15.3	2.2
+7.50	14.0	1.9
+7.25	12.2	1.5
+7.00	9.9	1.1
+6.75	7.2	0.7
+6.50	4.8	0.4
+6.25	2.8	0.2
+6.00	1.4	0.1
+5.75	0.7	0.0
+5.50	0.3	0.0
+5.25	0.1	0.0
+5.00	0.0	0.0
+4.75	0.0	0.0"""
+
+M = text2dataframe(M)
+M = M.to_numpy()
+
+P_D12 = var([interpol(-xi) for xi in M[:,1]], 0, "Potencia de salida", "dBm")
+P_D21 = var([interpol(-xi) for xi in M[:,2]], 0, "Potencia de salida", "dBm")
+
+plt.close()
+ax = plt.gca()
+ax.set_title("Elemento de dos puertas")
+P_D12.vs(P_dB, options = options, plot_args = plot_args | {"label": "Entrada por puerta 1"})
+P_D21.vs(P_dB, options = options, plot_args = plot_args | {"label": "Entrada por puerta 2"})
+plt.legend()
+plt.savefig(path + "images/P_cilindro")
 
 
+
+explicacion = "En la curva de calibración del cristal detector, observamos que para los valores usados de potencia más altos, el voltaje varía bastante y no está unívocamente determinado (la curva tiene más de un valor de potencia para un mismo voltaje), por lo que no será útil para medir potencias. Para valores de voltaje entre -1 mV y -12.5 mV se encuentra una zona lineal, que es ideal para calcular la potencia en función del voltaje emitido por el cristal detector. Para potencias cercanas a 0, lógicamente, el voltaje también se va a 0."
